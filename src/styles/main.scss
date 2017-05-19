@@ -1,0 +1,104 @@
+.datepicker-holder{
+  position: relative;
+  display: inline-block;
+  font-family: 'Roboto', sans-serif;
+  font-size: 13px;
+}
+
+.datepicker-calendar{
+  position: absolute;
+  width: 100%;
+  left: 0;
+  background-color: #FFF;
+  min-width: 300px;
+  border: #DDDDDD;
+  box-shadow: 0px 1px 1px rgba(0,0,0,0.2);
+}
+
+.datepicker-calendar-month-header{
+  padding: 5px;
+  margin-bottom: 5px;
+  position: relative;
+  border-bottom: 1px solid #DEDEDF;
+}
+
+.datepicker-calendar-month-title{
+  text-align: center;
+  margin: 0;
+  font-size: 13px;
+  font-weight: bold;
+  color: #676A6C;
+}
+
+.datepicker-calendar-year{
+  color: #676A6C;
+  font-size: 12px;
+  display:block;
+  font-weight: normal;
+}
+
+.datepicker-calendar-arrow{
+  position: absolute;
+  border: 0 none;
+  background-color: transparent;
+  padding: 0;
+  top: 0;
+  bottom: 0;
+  cursor: pointer;
+  &.prev{
+    left: 0;
+  }
+  &.next{
+    right: 0;
+  }
+  &:focus{
+    outline: 0 none;
+  }
+}
+
+.datepicker-calendar-week-header{
+  padding: 10px
+}
+
+.datepicker-cell{
+  display: inline-block;
+  width: 14.2%;
+  color: #676A6C;
+  text-align: center;
+  &.day{
+    font-weight: bold;
+    color: #A5A5A5;
+  }
+}
+
+//----------------------------------Icons
+.datepicker-icon{
+  display: inline-block;
+  background-image: url('../../src/images/sprite.svg');
+  background-repeat: no-repeat;
+  &.arrow-left{
+    width: 32px;
+    height: 32px;
+    background-position: 13px 7px;
+  }
+  &.arrow-right{
+    width: 32px;
+    height: 32px;
+    background-position: -13px 7px;
+  }
+}
+
+//----------------------------------Animations
+.fade-in-enter{
+  opacity: 0.01;
+}
+
+.fade-in-enter.fade-in-enter-active{
+  opacity: 1;
+  transition: opacity 150ms ease-in;
+}
+
+.fade-in-leave.fade-in-leave-active{
+  opacity: 0.01;
+  transition: opacity 100ms ease-in;
+}
