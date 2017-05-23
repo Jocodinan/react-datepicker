@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import MonthHeader from './month-header.jsx';
 import WeekHeader from './week-header.jsx';
+import CalendarDays from './calendar-days.jsx';
 
 export default class Calendar extends Component{
   componentDidMount(){
@@ -10,11 +12,24 @@ export default class Calendar extends Component{
     window.removeEventListener('mousedown', this.props.pageClick, false);
   }
   render(){
+    const {onCalendarMouseEnter, onCalendarMouseLeave, visible} = this.props;
     return (
-      <div className={`datepicker-calendar ${this.props.visible}`} onMouseEnter={this.props.onCalendarMouseEnter} onMouseLeave={this.props.onCalendarMouseLeave}>
+      <div 
+        className={`datepicker-calendar ${visible}`} 
+        onMouseEnter={onCalendarMouseEnter} 
+        onMouseLeave={onCalendarMouseLeave}>
         <MonthHeader { ...this.props } />
         <WeekHeader { ...this.props } />
+        <CalendarDays { ...this.props } />
       </div>
     );
   }
+}
+
+Calendar.propTypes = {
+  pageClick: PropTypes.func,
+  onCalendarMouseEnter: PropTypes.func,
+  onCalendarMouseLeave: PropTypes.func,
+  onChangeMonth: PropTypes.func,
+  onSelectedDay: PropTypes.func
 }

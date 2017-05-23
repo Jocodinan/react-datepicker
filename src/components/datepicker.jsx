@@ -1,19 +1,30 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
 import Calendar from './calendar.jsx';
+
+require("moment/min/locales.min");
 
 export default class DatePicker extends Component{
   constructor(props){
     super(props);
+    const { selectedDate, dateFormat, lang } = this.props,
+          parseDate = selectedDate ? selectedDate : new Date(),
+          date = moment(parseDate).format(dateFormat);
+
+    moment.locale(lang);
 
     this.showCalendar = this.showCalendar.bind(this);
     this.pageClick = this.pageClick.bind(this);
     this.onCalendarMouseEnter = this.onCalendarMouseEnter.bind(this);
     this.onCalendarMouseLeave = this.onCalendarMouseLeave.bind(this);
+    this.onChangeMonth = this.onChangeMonth.bind(this);
+    this.onSelectedDay = this.onSelectedDay.bind(this);
 
     this.state = {
-      selectedDate: this.props.selectedDate,
+      selectedDate: date,
+      showingDate: date,
       visible: false,
       onCalendar: false
     }
@@ -31,28 +42,48 @@ export default class DatePicker extends Component{
   onCalendarMouseLeave(){
     this.setState({ onCalendar: false });
   }
+  onChangeMonth(direction){
+    const { dateFormat } = this.props;
+    let date = moment(this.state.showingDate).clone();
+
+    if(direction == 'prev'){
+      date = date.subtract(1, 'month').format(dateFormat);
+    }else{
+      date = date.add(1, 'month').format(dateFormat);
+    }
+    
+    this.setState({ showingDate: date });
+  }
+  onSelectedDay(date){
+    this.setState({
+      selectedDate: date
+    });
+  }
   render(){
-    const props = this.props;
-
+    const { datePickerHolderClass, inputClass, inputName } = this.props,
+          { selectedDate } = this.state; 
     let calendar = null;
-
+    
     if(this.state.visible){
       calendar = (
         <Calendar 
           { ...this.state } 
-          { ...props }
+          { ...this.props }
           pageClick={this.pageClick}
           onCalendarMouseEnter={this.onCalendarMouseEnter}
           onCalendarMouseLeave={this.onCalendarMouseLeave}
+          onChangeMonth={this.onChangeMonth}
+          onSelectedDay={this.onSelectedDay}
+          selectedDate={ selectedDate }
         />
       );
     }
 
     return (
-      <div className="datepicker-holder">
+      <div className={datePickerHolderClass}>
         <input 
-          className={props.className} 
-          type="text" name={props.inputName} 
+          className={inputClass} 
+          type="text" name={inputName} 
           value={this.state.selectedDate} 
           onClick={this.showCalendar}
           readOnly
@@ -71,13 +102,15 @@ export default class DatePicker extends Component{
 
 DatePicker.propTypes = {
   inputName: PropTypes.string.isRequired,
-  className: PropTypes.string,
-  // selectedDate: PropTypes.date,
+  inputClass: PropTypes.string,
   dateFormat: PropTypes.string,
+  datePickerHolderClass: PropTypes.string,
   lang: PropTypes.string
 }
 
 DatePicker.defaultProps = {
   selectedDate: new Date(),
+  dateFormat: "DD-MM-YYYY",
+  datePickerHolderClass: "datepicker-holder",
   lang: 'es'
 }

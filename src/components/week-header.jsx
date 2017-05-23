@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
-import { getDays } from './datepicker-utilities.js'
+import moment from 'moment';
 
 export default class WeekHeader extends Component{
   getDaysContent(){
-    const props = this.props;
-    return getDays(props.lang).map((day) => {
-            return (
-              <div className="datepicker-cell day" key={`kay-${day}`}>
-                { day }
-              </div>
-            );
-          });
+    const weekHeaders = [];
+    for(let i = 0; i < 7; i++){
+      weekHeaders.push(
+        <div className="datepicker-cell day" key={`key-weekday-${i}`}>
+          { moment().weekday(i).format('dd') }
+        </div>
+      );
+    }
+    return weekHeaders;
   }
   render(){
     const days = this.getDaysContent();
