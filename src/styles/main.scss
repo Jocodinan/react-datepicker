@@ -89,8 +89,7 @@
   font-size: 13px;
   cursor: pointer;
   border-radius: 100%;
-  transition: all 350ms ease;
-  &:hover{
+  &:hover, &.in-range{
     background-color: lighten(#676A6C, 50%)
   }
   &.disable{
@@ -101,6 +100,9 @@
     color: #FFF;
     background-color: #23c6c8;
     font-weight: bold;
+    &:hover{
+      background-color: transparent
+    }
   }
 }
 

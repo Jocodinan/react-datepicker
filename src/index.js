@@ -6,5 +6,11 @@ ReactDOM.render(
   <DatePicker 
     inputName="datepicker"
     dateFormat="YYYY-MM-DD"
+    selectDateCallback={
+      function(date){
+        console.log(date);
+      }
+    }
+    rangePicker={true}
   />, 
   document.getElementById('root') );

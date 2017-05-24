@@ -24,9 +24,11 @@ export default class DatePicker extends Component{
 
     this.state = {
       selectedDate: date,
+      endDate: null,
       showingDate: date,
       visible: false,
-      onCalendar: false
+      onCalendar: false,
+      selectingRangeDate: false
     }
   }
   showCalendar(){
@@ -55,9 +57,16 @@ export default class DatePicker extends Component{
     this.setState({ showingDate: date });
   }
   onSelectedDay(date){
+    const { selectDateCallback, rangePicker } = this.props,
+          useRangePicker = rangePicker ? !this.state.selectingRangeDate : false;
+
     this.setState({
-      selectedDate: date
+      selectedDate: date,
+      selectingRangeDate: useRangePicker,
+      visible: rangePicker && useRangePicker ? true : false
     });
+
+    selectDateCallback(date);
   }
   render(){
     const { datePickerHolderClass, inputClass, inputName } = this.props,
@@ -105,12 +114,15 @@ DatePicker.propTypes = {
   inputClass: PropTypes.string,
   dateFormat: PropTypes.string,
   datePickerHolderClass: PropTypes.string,
-  lang: PropTypes.string
+  lang: PropTypes.string,
+  rangePicker: PropTypes.bool,
+  selectDateCallback: PropTypes.func
 }
 
 DatePicker.defaultProps = {
   selectedDate: new Date(),
   dateFormat: "DD-MM-YYYY",
   datePickerHolderClass: "datepicker-holder",
-  lang: 'es'
+  lang: 'es',
+  rangePicker: false
 }

@@ -2,8 +2,61 @@ import React, { Component } from 'react';
 import moment from 'moment';
 
 export default class CalendarDays extends Component{
+  constructor(props){
+    super(props);
+
+    this.onHoverDay = this.onHoverDay.bind(this);
+    this.onSelectedDay = this.onSelectedDay.bind(this);
+
+    this.state = {
+      hoverDay: null,
+      selectedRange: []
+    }
+  }
+  onSelectedDay(currentDay){
+    const { onSelectedDay, dateFormat } = this.props;
+    this.setState({
+      selectedRange: []
+    })
+    onSelectedDay(currentDay.format(dateFormat));
+  }
+  onHoverDay(day){
+    const { selectedDate, dateFormat } = this.props,
+          { selectedRange } = this.state,
+          startDate = moment(selectedDate).clone().hour(12).minute(0).second(0).millisecond(0),
+          currentDay = moment(day).clone().hour(12).minute(0).second(0).millisecond(0),
+          inRangeDays = [];
+    
+    let difference;
+
+    if(startDate.isBefore(currentDay)){
+      difference = parseInt(moment(currentDay.diff(startDate)).clone().format('DD'));
+      for(let i = 0; i < difference; i++){
+        inRangeDays.push(currentDay.clone().subtract(i + 1, 'days').format(dateFormat));
+      }
+    }else if(startDate.isAfter(currentDay)){
+      difference = parseInt(moment(startDate.diff(currentDay)).clone().format('DD'));
+      for(let i = 0; i < difference; i++){
+        inRangeDays.push(currentDay.clone().add(i + 1, 'days').format(dateFormat));
+      }
+    }         
+
+    this.setState({
+      hoverDay: day.hour(12).minute(0).second(0).millisecond(0),
+      selectedRange: inRangeDays
+    });
+  }
+  getHoverRangeClass(day){
+    //   console.log('up');
+    // }else if(startDate.isSame(currentDay)){
+    //   console.log('same');
+    // }else if(startDate.isAfter(currentDay)){
+    //   console.log('down');
+    // }
+  }
 	getMonthWeeks(){
-    const {showingDate, selectedDate, onSelectedDay, dateFormat} = this.props,
+    const {showingDate, selectedDate, onSelectedDay, dateFormat, selectingRangeDate} = this.props,
+          {hoverDay, selectedRange} = this.state,
           date = moment(showingDate).clone(),
           daysInMonth = date.clone().daysInMonth(),
           firstOfMonth = date.clone().startOf('month').hour(12),
@@ -23,17 +76,30 @@ export default class CalendarDays extends Component{
 
     //Days of the current month
     for(let j = 0; j < daysInMonth; j++){
-			const currentDay = firstOfMonth.clone().add(j, 'days'),
-            selectedDateOnMonth = moment(selectedDate).clone();
+			const currentDay = firstOfMonth.clone().add(j, 'days').minute(0).second(0).millisecond(0),
+            selectedDateOnMonth = moment(selectedDate).clone().hour(12).minute(0).second(0).millisecond(0),
+            parsedCurrentDay = currentDay.format(dateFormat);
 
-			let activeClass = '';
-			if(selectedDateOnMonth.isSame(currentDay, 'year') && selectedDateOnMonth.isSame(currentDay, 'month') && selectedDateOnMonth.isSame(currentDay, 'day')){
+			let activeClass = '',
+          rangeClass = '';
+
+			if(selectedDateOnMonth.isSame(currentDay)){
 				activeClass = 'active';
 			}
 
+      if(selectingRangeDate){
+        if(currentDay.isSame(hoverDay)){
+          activeClass = 'active';
+        }
+
+        if(selectedRange.includes(parsedCurrentDay)){
+          rangeClass = 'in-range'
+        }
+      }
+ 
       days.push(
         <div className="datepicker-calendar-day-holder" key={`day-${j}`}>
-          <div className={`datepicker-calendar-day ${activeClass}`} onClick={ onSelectedDay.bind(null, currentDay.format(dateFormat)) }>
+          <div className={`datepicker-calendar-day ${activeClass} ${rangeClass}`} onClick={ this.onSelectedDay.bind(null, currentDay) } onMouseEnter={this.onHoverDay.bind(null, currentDay)}>
             { currentDay.format('DD') }
           </div>
         </div>
