@@ -95,15 +95,19 @@
   &.disable{
     color: #BFBFBF;
     cursor: auto;
+     &:hover{
+      background-color: transparent
+    }
   }
   &.active{
     color: #FFF;
     background-color: #23c6c8;
     font-weight: bold;
-    &:hover{
-      background-color: transparent
-    }
   }
+}
+
+.full{
+  width: 300px
 }
 
 //----------------------------------Icons

@@ -9,9 +9,7 @@ require("moment/min/locales.min");
 export default class DatePicker extends Component{
   constructor(props){
     super(props);
-    const { selectedDate, dateFormat, lang } = this.props,
-          parseDate = selectedDate ? selectedDate : new Date(),
-          date = moment(parseDate).format(dateFormat);
+    const { startDate, endDate, dateFormat, lang } = this.props;
 
     moment.locale(lang);
 
@@ -23,9 +21,9 @@ export default class DatePicker extends Component{
     this.onSelectedDay = this.onSelectedDay.bind(this);
 
     this.state = {
-      selectedDate: date,
-      endDate: null,
-      showingDate: date,
+      startDate: moment(startDate).clone().format(dateFormat),
+      endDate: endDate ? moment(endDate).clone().format(dateFormat) : null,
+      showingDate: moment(startDate).clone().format(dateFormat),
       visible: false,
       onCalendar: false,
       selectingRangeDate: false
@@ -58,19 +56,37 @@ export default class DatePicker extends Component{
   }
   onSelectedDay(date){
     const { selectDateCallback, rangePicker } = this.props,
-          useRangePicker = rangePicker ? !this.state.selectingRangeDate : false;
+          {startDate} = this.state,
+          useRangePicker = rangePicker ? !this.state.selectingRangeDate : false,
+          statesOptions = {
+            selectingRangeDate: useRangePicker,
+            visible: rangePicker && useRangePicker ? true : false
+          }
+    
+    if(rangePicker){
+      statesOptions.endDate = date;
+      if(useRangePicker){
+        statesOptions.startDate = date;
+      }
+    }else{
+      statesOptions.startDate = date;
+    }
 
-    this.setState({
-      selectedDate: date,
-      selectingRangeDate: useRangePicker,
-      visible: rangePicker && useRangePicker ? true : false
-    });
+    this.setState(statesOptions);
 
-    selectDateCallback(date);
+    if(rangePicker){
+      if(!useRangePicker){
+        selectDateCallback(`${startDate} - ${date}`);
+      }
+    }else{
+      selectDateCallback(date);
+    }
   }
   render(){
-    const { datePickerHolderClass, inputClass, inputName } = this.props,
-          { selectedDate } = this.state; 
+    const { datePickerHolderClass, inputClass, inputName, rangePicker } = this.props,
+          { startDate, endDate } = this.state,
+          inputValue = rangePicker && endDate ? `${startDate} - ${endDate}` : startDate;
+
     let calendar = null;
     
     if(this.state.visible){
@@ -83,7 +99,7 @@ export default class DatePicker extends Component{
           onCalendarMouseLeave={this.onCalendarMouseLeave}
           onChangeMonth={this.onChangeMonth}
           onSelectedDay={this.onSelectedDay}
-          selectedDate={ selectedDate }
+          startDate={ startDate }
         />
       );
     }
@@ -93,7 +109,7 @@ export default class DatePicker extends Component{
         <input 
           className={inputClass} 
           type="text" name={inputName} 
-          value={this.state.selectedDate} 
+          value={inputValue} 
           onClick={this.showCalendar}
           readOnly
         />
@@ -120,7 +136,7 @@ DatePicker.propTypes = {
 }
 
 DatePicker.defaultProps = {
-  selectedDate: new Date(),
+  startDate: new Date(),
   dateFormat: "DD-MM-YYYY",
   datePickerHolderClass: "datepicker-holder",
   lang: 'es',

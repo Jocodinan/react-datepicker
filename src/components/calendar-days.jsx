@@ -21,41 +21,28 @@ export default class CalendarDays extends Component{
     onSelectedDay(currentDay.format(dateFormat));
   }
   onHoverDay(day){
-    const { selectedDate, dateFormat } = this.props,
+    const { startDate, dateFormat } = this.props,
           { selectedRange } = this.state,
-          startDate = moment(selectedDate).clone().hour(12).minute(0).second(0).millisecond(0),
+          startDateSelected = moment(startDate).clone().hour(12).minute(0).second(0).millisecond(0),
           currentDay = moment(day).clone().hour(12).minute(0).second(0).millisecond(0),
           inRangeDays = [];
     
     let difference;
 
-    if(startDate.isBefore(currentDay)){
-      difference = parseInt(moment(currentDay.diff(startDate)).clone().format('DD'));
+    if(startDateSelected.isBefore(currentDay)){
+      difference = parseInt(moment(currentDay.diff(startDateSelected)).clone().format('DD'));
       for(let i = 0; i < difference; i++){
         inRangeDays.push(currentDay.clone().subtract(i + 1, 'days').format(dateFormat));
       }
-    }else if(startDate.isAfter(currentDay)){
-      difference = parseInt(moment(startDate.diff(currentDay)).clone().format('DD'));
-      for(let i = 0; i < difference; i++){
-        inRangeDays.push(currentDay.clone().add(i + 1, 'days').format(dateFormat));
-      }
-    }         
+    }       
 
     this.setState({
       hoverDay: day.hour(12).minute(0).second(0).millisecond(0),
       selectedRange: inRangeDays
     });
   }
-  getHoverRangeClass(day){
-    //   console.log('up');
-    // }else if(startDate.isSame(currentDay)){
-    //   console.log('same');
-    // }else if(startDate.isAfter(currentDay)){
-    //   console.log('down');
-    // }
-  }
 	getMonthWeeks(){
-    const {showingDate, selectedDate, onSelectedDay, dateFormat, selectingRangeDate} = this.props,
+    const {showingDate, startDate, onSelectedDay, dateFormat, selectingRangeDate} = this.props,
           {hoverDay, selectedRange} = this.state,
           date = moment(showingDate).clone(),
           daysInMonth = date.clone().daysInMonth(),
@@ -77,7 +64,7 @@ export default class CalendarDays extends Component{
     //Days of the current month
     for(let j = 0; j < daysInMonth; j++){
 			const currentDay = firstOfMonth.clone().add(j, 'days').minute(0).second(0).millisecond(0),
-            selectedDateOnMonth = moment(selectedDate).clone().hour(12).minute(0).second(0).millisecond(0),
+            selectedDateOnMonth = moment(startDate).clone().hour(12).minute(0).second(0).millisecond(0),
             parsedCurrentDay = currentDay.format(dateFormat);
 
 			let activeClass = '',
